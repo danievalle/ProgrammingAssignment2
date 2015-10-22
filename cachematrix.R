@@ -6,6 +6,7 @@
 
 makeCacheMatrix <- function(x = matrix()) {
     ## Return an object List that can cache the inverse of a matrix (in parameter)
+    ## Parameter x has to be a Matrix
     
     m <- NULL
     
@@ -13,11 +14,11 @@ makeCacheMatrix <- function(x = matrix()) {
     # the matrix is the parameter (y)
     set <- function(y) {
         # if the parameter (y) is a matrix
-        # assign a values (y and null) to objects (x and m) in an environment that is different
-        # from the current environment
+        # assign a values (y and null) to objects (x and m) in an environment
+        # that is different from the current environment
         if (is.matrix(y)){
             # if "set" is called, matrix is replaced by parameter
-            # and the inverted matric already calculated is removed from the cache
+            # and the inverted matrix already calculated is removed from the cache
             x <<- y
             m <<- NULL
         } else{
@@ -32,7 +33,7 @@ makeCacheMatrix <- function(x = matrix()) {
     # solve is the inverted matrix (parameter of the function) which is cached into m
     setsolve <- function(solve) m <<- solve
     
-    # "m" is returned (inverted matrix)
+    # a function returning "m" (inverted matrix)
     getsolve <- function() m
     
     # return list with getter and setter of the object
@@ -49,10 +50,15 @@ makeCacheMatrix <- function(x = matrix()) {
 
 cacheSolve <- function(x, ...) {  
     ## Return a matrix that is the inverse of 'x'
+    ## 'x' has to be a special matrix returned by 'makeCacheMatrix'.
     
-    # if parameter (x) is a matrix, transform in special "cacheMatrix"
+    # if parameter (x) is a matrix and not a "special matrix", give an error message to user
+    # and return NULL
     if(is.matrix(x)){
-        x <- makeCacheMatrix(x)
+        message("parameter has to be a special CacheMatrix") 
+        # not requested in the function, so return NULL
+        # x <- makeCacheMatrix(x)
+        return(NULL)
     }
     
     # check if inverted matrix is cached
@@ -65,47 +71,13 @@ cacheSolve <- function(x, ...) {
     
     # assign to "data" the matrix to solve
     data <- x$get()
-    # compute into to "m" the inverted of the matrix
+    
+    # compute into to "m" the invert of the matrix
     m <- solve(data, ...)
     
     # cache the "m" inverted matrix
     x$setsolve(m)
+    
     # return the inverted matrix
     m
 }
-
-################## FOR TEST PURPOSE ##################
-# 
-# # Debug functions
-# debug(makeCacheMatrix)
-# debug(cacheSolve)
-# 
-# # Test functions
-# x<- matrix(c(1,3,5,6,7,8,43,21,34),3,3)
-# matrix.to.solve <- makeCacheMatrix(x)
-# res1 <- cacheSolve(matrix.to.solve)
-# res2 <- cacheSolve(matrix.to.solve)
-# 
-# # Test with bigger matrix
-# y <- matrix(runif(1000000000, min = 0, max = 99999),1000,1000)
-# matrix.to.solve.big <- makeCacheMatrix(y)
-# res3 <- cacheSolve(matrix.to.solve.big)
-# res4 <- cacheSolve(matrix.to.solve.big)
-# 
-# # Test to solve a "normal" matrix
-# z <- matrix(c(1,39,4,2,7,8,43,21,34),3,3)
-# res5 <- cacheSolve(z)
-# 
-# # Test to set
-# zz <- matrix(c(1,3,5,6,12,101,43,21,34),3,3)
-# matrix.to.solve$set(zz)
-# res6 <- cacheSolve(matrix.to.solve)
-# 
-# zzz <- c(1,3,5,6,12,101,43,21,34)
-# matrix.to.solve$set(zzz)
-# 
-# # Compare to "standard" solve
-# b <- solve(x)
-# c <- solve(y)
-# d <- solve(z)
-# e <- solve(zz)
