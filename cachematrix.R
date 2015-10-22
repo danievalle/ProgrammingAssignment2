@@ -15,7 +15,7 @@ makeCacheMatrix <- function(x = matrix()) {
     set <- function(y) {
         # If the parameter (y) is a matrix
         # cahe the matrix in 'x' (in a different environment)
-        # and clear the inverted matrix already calculated
+        # and clear the inverted matrix already calculated (in cache)
         if (is.matrix(y)){
             x <<- y
             m <<- NULL
@@ -57,7 +57,6 @@ cacheSolve <- function(x, ...) {
         return(NULL)
     }
     
-
     # If it is already in the cache the inverted matrix is returned and function stops
     m <- x$getsolve()
     if(!is.null(m)) {
